@@ -93,8 +93,7 @@ class FailureMonad:
                     # Binds the function to the argument
                     return self.bind(f, *args, **kwargs)
 
-                # If there is only one argument and it is a list
-                elif len(args) == 1 and isinstance(args[0], list):
+                elif len(args) == 1:
 
                     # Binds the function to the first argument of the list
                     last = self.bind(f, args[0][0], **kwargs)
@@ -106,11 +105,9 @@ class FailureMonad:
                     # Returns the bound monad
                     return last
 
-                # If there aren't any arguments binds the function to the value of the monad
-                elif len(args) == 0:
+                elif not args:
                     return self.bind(f, **kwargs)
 
-                # If there are more than one argument
                 else:
 
                     # Binds the function to the first argument
@@ -123,7 +120,6 @@ class FailureMonad:
                     # Returns the bound monad
                     return last
 
-            # If consecutive_binds received a functions list and there is an arguments list with the same length of the functions list - 1
             elif isinstance(f, list) and len(args) == 1 and isinstance(args[0], list) and len(f) == len(args[0]) + 1:
 
                 # Binds the first function to the first argument of the list
@@ -137,11 +133,9 @@ class FailureMonad:
                 # Returns the bound monad
                 return last
 
-            # Otherwise, raise an exception because the arguments are invalid
             else:
                 raise Exception('Invalid arguments')
 
-        # If an error occurs, return a monad with no value and creates an error status
         except Exception as e:
 
             failure_status = {
@@ -290,7 +284,7 @@ class LazyMonad:
 
                 return self.bind(f, *args, **kwargs)
 
-            elif len(args) == 1 and isinstance(args[0], list):
+            elif len(args) == 1:
 
                 last = self.bind(f, args[0][0], **kwargs)
 
