@@ -105,3 +105,239 @@ Using this class you can choose:
 ```
 
 #### Create a Failure Monad with a value inside:
+
+```http
+  FailureMonad(value)
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+
+#### Bind a Failure Monad with a function:
+
+```http
+  FailureMonad(value).bind(function)
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+| `function` | `function` | **Not optional**. A funtion to bind the value of the monad with.  |
+
+#### Get the value from a Failure Monad:
+
+```http
+  FailureMonad(value).bind(function).value
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+| `function` | `function` | **Not optional**. A funtion to bind the value of the monad with.  |
+
+#### Example:
+
+```http
+  def square(x):
+    return x**2
+  print(FailureMonad(100).bind(square).value)
+```
+
+#### Returns:
+
+```http
+  10000 #It applied the function to the value of the monad.
+```
+
+#### Example:
+
+```http
+  def square(x):
+    return x**2
+  print(FailureMonad(100).bind(square).bind(square).value)
+```
+
+
+#### Returns:
+
+```http
+  1000000 #It applied the function to the value of the monad twice
+```
+
+#### Multiple argument functions support:
+
+```http
+  def div(x, y):
+    return x/y
+  print(FailureMonad(100).bind(div, 10).value)
+```
+
+
+#### Returns:
+
+```http
+  10 #It applied the function to the value of the monad and the argument.
+```
+
+#### Example:
+
+```http
+  def div(x, y):
+    return x/y
+  print(FailureMonad(100).bind(div, 10).bind(div, 10).value)
+```
+
+
+#### Returns:
+
+```http
+  1 #It applied the function to the value of the monad and the argument twice.
+```
+
+#### The key difference of Failure Monads is error handling:
+
+```http
+  def div(x, y):
+    return x/y
+  print(FailureMonad(100).bind(div, 0).value)
+```
+
+
+#### Returns:
+
+```http
+  None #Instead of rising an Exception it returs None and updates the error status.
+```
+
+#### Get the error status of a failure monad
+```http
+  
+  FailureMonad(value).bind(function).error_status
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+| `function` | `function` | **Not optional**. A funtion to bind the value of the monad with.  |
+
+#### Example:
+
+```http
+  def div(x, y):
+    return x/y
+  print(FailureMonad(100).bind(div, 0).error_status)
+  #It returns a dictionary containing every info of the exception/error.
+```
+
+
+#### Create a Lazy Monad with a value inside:
+
+```http
+  LazyMonad(value)
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+
+#### Bind a Lazy Monad with a function:
+
+```http
+  LazyMonad(value).bind(function)
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+| `function` | `function` | **Not optional**. A funtion to bind the value of the monad with.  |
+
+#### The key difference of Lazy monads is late computing, it only computes when asked.
+
+```http
+  FailureMonad(value).bind(function).compute()
+```
+
+| Parameter  | Type      | Description                           |
+| :---------- | :--------- | :---------------------------------- |
+| `value` | `number` | **Not optional**. The value of your monad.  |
+| `function` | `function` | **Not optional**. A funtion to bind the value of the monad with.  |
+
+#### Example:
+
+```http
+  def square(x):
+    return x**2
+  print(LazyMonad(100).bind(square).compute())
+```
+
+#### Returns:
+
+```http
+  10000 #It applied the function to the value of the monad.
+```
+
+#### Example:
+
+```http
+  def square(x):
+    return x**2
+  print(LazyMonad(100).bind(square).bind(square).compute())
+```
+
+
+#### Returns:
+
+```http
+  1000000 #It applied the function to the value of the monad twice
+```
+
+#### Multiple argument functions support:
+
+```http
+  def div(x, y):
+    return x/y
+  print(LazyMonad(100).bind(div, 10).compute())
+```
+
+
+#### Returns:
+
+```http
+  10 #It applied the function to the value of the monad and the argument.
+```
+
+#### Example:
+
+```http
+  def div(x, y):
+    return x/y
+  print(LazyMonad(100).bind(div, 10).bind(div, 10).compute())
+```
+
+
+#### Returns:
+
+```http
+  1 #It applied the function to the value of the monad and the argument twice.
+```
+
+#### Since Lazy Monads do not handle errors like Failure Monads:
+
+```http
+  def div(x, y):
+    return x/y
+  print(LazyMonad(100).bind(div, 0))
+  # This does not rise an exception because it hasn't computed it yet
+```
+
+#### So if we compute it, then it rises an Exception because we are dividing by zero:
+
+```http
+  def div(x, y):
+    return x/y
+  print(LazyMonad(100).bind(div, 0).compute())
+  # Rises an Exception because we can't divide by zero.
+```
+
+#### Consecutive Binds Method:
